@@ -29,7 +29,7 @@ pipeline {
         stage('Lint') {
             steps {
                 echo 'Linting...'
-                bat 'venv\\Scripts\\flake8 .'
+                bat 'venv\\Scripts\\flake8 app.py'
             }
         }
 
