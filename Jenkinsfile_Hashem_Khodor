@@ -17,10 +17,12 @@ pipeline {
                     // Use the determined Python command to create a virtual environment
                     bat "${pythonCommand} -m venv venv"
                 }
-                // Activate the virtual environment
-                bat 'venv\\Scripts\\activate'
-                // Install required dependencies
-                // bat '${pythonCommand} -m pip install -r requirements.txt'
+                // Activate the virtual environment and install dependencies
+                bat '''
+                    venv\\Scripts\\activate
+                    venv\\Scripts\\python -m pip install --upgrade pip
+                    venv\\Scripts\\python -m pip install -r requirements.txt
+                '''
             }
         }
 
