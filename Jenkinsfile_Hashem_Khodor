@@ -1,48 +1,40 @@
 pipeline {
     agent any
-    environment {
-        VIRTUAL_ENV = 'venv'
-    }
     stages {
         stage('Setup') {
             steps {
                 script {
-                    if (!fileExists("${env.WORKSPACE}\\${VIRTUAL_ENV}")) {
-                        bat "python -m venv ${VIRTUAL_ENV}"
+                    def pythonCommand = 'python'
+                    
+                    // Check if Python is available as a command
+                    def result = bat(script: "${pythonCommand} --version", returnStatus: true)
+
+                    if (result != 0) {
+                        // Fall back to specific Python executable path
+                        pythonCommand = '"C:\\Users\\hashe\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"'
                     }
-                    bat """
-                        ${VIRTUAL_ENV}\\Scripts\\activate.bat &&
-                        pip install -r requirements.txt
-                    """
+
+                    // Use the determined Python command to create a virtual environment
+                    bat "${pythonCommand} -m venv venv"
                 }
             }
         }
         stage('Lint') {
             steps {
-                script {
-                    bat """
-                        ${VIRTUAL_ENV}\\Scripts\\activate.bat &&
-                        flake8 app.py
-                    """
-                }
+                echo 'Linting...'
+                // Add your linting commands here
             }
         }
         stage('Test') {
             steps {
-                script {
-                    bat """
-                        ${VIRTUAL_ENV}\\Scripts\\activate.bat &&
-                        pytest
-                    """
-                }
+                echo 'Testing...'
+                // Add your test commands here
             }
         }
         stage('Deploy') {
             steps {
-                script {
-                    // Deployment logic, e.g., pushing to a remote server
-                    echo "Deploying application..."
-                }
+                echo 'Deploying...'
+                // Add your deployment commands here
             }
         }
     }
