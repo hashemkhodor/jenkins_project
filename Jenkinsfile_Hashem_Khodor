@@ -17,9 +17,9 @@ pipeline {
                     // Use the determined Python command to create a virtual environment
                     bat "${pythonCommand} -m venv venv"
                 }
-                // Activate the virtual environment and install dependencies
+                // Install dependencies from requirements.txt
                 bat '''
-                    venv\\Scripts\\activate
+                    call venv\\Scripts\\activate
                     venv\\Scripts\\python -m pip install --upgrade pip
                     venv\\Scripts\\python -m pip install -r requirements.txt
                 '''
@@ -29,7 +29,10 @@ pipeline {
         stage('Lint') {
             steps {
                 echo 'Linting...'
-                bat 'venv\\Scripts\\flake8 app.py'
+                bat '''
+                    call venv\\Scripts\\activate
+                    flake8 app.py
+                '''
             }
         }
 
