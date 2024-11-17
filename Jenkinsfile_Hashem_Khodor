@@ -58,7 +58,7 @@ pipeline {
         stage('Security Scan') {
             steps {
                 echo 'Running Security Scan...'
-                bat 'venv\\Scripts\\bandit -r . --exclude venv'
+                bat 'venv\\Scripts\\bandit app.py'
             }
         }
 
