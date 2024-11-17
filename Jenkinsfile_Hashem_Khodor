@@ -7,8 +7,11 @@ pipeline {
         stage('Setup') {
             steps {
                 script {
+                    bat 'echo %PATH%'
+                    bat 'whereis python'
+                    bat 'whereis py'
                     if (!fileExists("${env.WORKSPACE}\\${VIRTUAL_ENV}")) {
-                        bat "python -m venv ${VIRTUAL_ENV}"
+                        bat "py -3.11 -m venv ${VIRTUAL_ENV}"
                     }
                     bat """
                         ${VIRTUAL_ENV}\\Scripts\\activate.bat &&
