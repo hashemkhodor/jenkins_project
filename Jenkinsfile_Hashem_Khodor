@@ -17,30 +17,66 @@ pipeline {
                     // Use the determined Python command to create a virtual environment
                     bat "${pythonCommand} -m venv venv"
                 }
+                // Activate the virtual environment
+                bat 'venv\\Scripts\\activate'
+                // Install required dependencies
+                bat 'pip install -r requirements.txt'
             }
         }
+
         stage('Lint') {
             steps {
                 echo 'Linting...'
-                // Add your linting commands here
+                bat 'venv\\Scripts\\flake8 .'
             }
         }
+
         stage('Test') {
             steps {
-                echo 'Testing...'
-                // Add your test commands here
+                echo 'Running Tests...'
+                bat 'venv\\Scripts\\pytest'
             }
         }
+
+        stage('Coverage') {
+            steps {
+                echo 'Running Code Coverage Analysis...'
+                bat '''
+                    venv\\Scripts\\coverage run -m pytest
+                    venv\\Scripts\\coverage report
+                    venv\\Scripts\\coverage html
+                '''
+                archiveArtifacts artifacts: 'htmlcov/**', allowEmptyArchive: true
+            }
+        }
+
+        stage('Security Scan') {
+            steps {
+                echo 'Running Security Scan...'
+                bat 'venv\\Scripts\\bandit -r .'
+            }
+        }
+
         stage('Deploy') {
             steps {
-                echo 'Deploying...'
-                // Add your deployment commands here
+                echo 'Deploying Application...'
+                script {
+                    def targetDir = "C:\\DeploymentDir"
+                    bat "mkdir ${targetDir} || echo Directory exists"
+                    bat "copy /Y * ${targetDir}"
+                }
             }
         }
     }
     post {
         always {
             cleanWs()
+        }
+        success {
+            echo 'Build succeeded!'
+        }
+        failure {
+            echo 'Build failed!'
         }
     }
 }
